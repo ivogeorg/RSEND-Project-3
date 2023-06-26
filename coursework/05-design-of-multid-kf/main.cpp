@@ -11,13 +11,13 @@ float measurements[3] = { 1, 2, 3 };
 
 tuple<MatrixXf, MatrixXf> kalman_filter(MatrixXf x, MatrixXf P, MatrixXf u, MatrixXf F, MatrixXf H, MatrixXf R, MatrixXf I)
 {
-    for (int n = 0; n < sizeof(measurements) / sizeof(measurements[0]); n++) {
+    for (int n = 0; n < sizeof(measurements) / sizeof(measurements[0]); n ++) {
         //****** TODO: Kalman-filter function********//
         
         // Measurement Update
         // Initialize and Compute Z, y, S, K, x, and P
 
-        // Z - observation
+        // Z - observation (comes from measurements)
         // z = [1 0][x x_dot].transpose()
 
         // y - measurement residual
@@ -37,7 +37,7 @@ tuple<MatrixXf, MatrixXf> kalman_filter(MatrixXf x, MatrixXf P, MatrixXf u, Matr
         
         
         // State Prediction
-        // Compute x and P
+        // Compute x and P (updated every iteration)
 
         // x - posterior state
         // x = x_prime + K y
@@ -77,8 +77,8 @@ int main()
     	 0, 1; 
 
     tie(x, P) = kalman_filter(x, P, u, F, H, R, I);
-    cout << "x= " << x << endl;
-    cout << "P= " << P << endl;
+    cout << "x = " << x << endl;
+    cout << "P = " << P << endl;
 
     return 0;
 }

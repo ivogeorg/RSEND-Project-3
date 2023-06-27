@@ -14,10 +14,25 @@ tuple<MatrixXf, MatrixXf> kalman_filter(MatrixXf x, MatrixXf P, MatrixXf u, Matr
     for (int n = 0; n < sizeof(measurements) / sizeof(measurements[0]); n ++) {
         //****** TODO: Kalman-filter function********//
         
+        // NOTE: 
+        // 1. Primes are updaated state x and covariance P (aka uncertainty). 
+        // 2. No explicit primes are used in the equations.
+        // 3. Each loop is an update of both x and P.
+        // 4. A (1, 2) and a (2, 1) matrix are initialized the same way in code.
+        // 5. z = H * X, where H = [1 0], a (1, 2), and X = [x x_dot].transpose().
+        // 6. z is then (1, 1). See below.
+        
+        // TODO:
+        // 1. Examine the input matrices' dimensions for a clue for the dimensions of the local matrices.
+        // 2. Consider (1, 1) matrices, especially for z, which is a degenerate (1, 1) matrix.
+        // 3. Then, z << measurements[n] makes sense.
+        
         // Measurement Update
         // Initialize and Compute Z, y, S, K, x, and P
 
         // Z - observation (comes from measurements)
+        // H = [1 0] - measurement function
+        // [x x_dot].transpose() - state (here position and velocity)
         // z = [1 0][x x_dot].transpose()
 
         // y - measurement residual

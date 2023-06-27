@@ -14,6 +14,8 @@ tuple<MatrixXf, MatrixXf> kalman_filter(MatrixXf x, MatrixXf P, MatrixXf u, Matr
     for (int n = 0; n < sizeof(measurements) / sizeof(measurements[0]); n ++) {
         //****** TODO: Kalman-filter function********//
         
+        // I. *************** Measurement Update ***************
+        
         // NOTE: 
         // 1. Primes are updaated state x and covariance P (aka uncertainty). 
         // 2. No explicit primes are used in the equations.
@@ -34,34 +36,47 @@ tuple<MatrixXf, MatrixXf> kalman_filter(MatrixXf x, MatrixXf P, MatrixXf u, Matr
         // H = [1 0] - measurement function
         // [x x_dot].transpose() - state (here position and velocity)
         // z = [1 0][x x_dot].transpose()
+        MatrixXf Z(1, 1);
+        Z << measurements[n];  // Degenerate matrix is initialized with a single number
 
         // y - measurement residual
         // y = z - H x_prime
+        MatrixXf y(1, 1);  // Necessarily (1, 1) by the formula
+        y << Z - (H * x);  // TODO: Are the parentheses needed?
         
         // S - result of mapping the state prediction covariance (P_prime) 
         // into the measurement space (H) and adds the measurement noise (R)
         // S = H P_prime H.transpose() + R
+        MatrixXf S(1, 1);  // Necessarily (1, 1) by the formula
+        S << H * P * H.transpose() + R;
         
         // K - Kalman gain coefficient (measurement or state predition)
+        // The Kalman Gain determines how much weight should be placed on the 
+        // state prediction, and how much on the measurement update. It is an 
+        // averaging factor that changes depending on the uncertainty of the 
+        // state prediction and measurement update.
         // K = P_prime H.transpose() S.inverse()
+        MatrixXf K(2, 1);  // Necessarily (2, 1) by formula
+        // TODO: Justify by K's role
+        K << P * H.transpose() * S.inverse();
         
-        
-        
-        
-        
-        
-        
-        // State Prediction
-        // Compute x and P (updated every iteration)
+
+        // Compute posterior x and P (updated every iteration)
 
         // x - posterior state
         // x = x_prime + K y
+        x << x + (K * y); 
         
-        // P - (posterior) covariance
+        // P - posterior covariance
         // P = (I - K H) P_prime
+        P << (I - (K * H)) * P;
 
+        // II. *************** State Prediction ***************
+        // x_prime = F * x
+        x << F * x;
         
-        
+        // P_prime = F * P * F.transpose()
+        P << F * P * F.transpose();
     }
 
     return make_tuple(x, P);
